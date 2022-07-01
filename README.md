@@ -2,6 +2,8 @@
 
 OnboardingKit provides an onboarding flow that is simple and easy to implement.
 
+![myfile](https://github.com/vicchirino/OnboardingKit/raw/main/video-preview.gif)
+
 ## Contents
 
 - [Requirements](#requirements)
