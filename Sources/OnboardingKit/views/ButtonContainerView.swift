@@ -10,7 +10,6 @@ import SnapKit
 
 class ButtonContainerView: UIView {
     
-    
     var nextButtonDidTap: (() -> Void)?
     var getStartedButtonDidTap: (() -> Void)?
 

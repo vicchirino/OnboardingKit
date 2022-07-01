@@ -9,22 +9,25 @@ import UIKit
 
 class OnboardingViewController: UIViewController {
     
+    var nextButtonDidTap: ((Int) -> Void)?
+    var getStartedButtonDidTap: (() -> Void)?
+    
     private let slides: [Slide]
     private let tintColor: UIColor
     
     private lazy var transitionView: TransitionView = {
-        let view = TransitionView()
+        let view = TransitionView(slides: slides, tintColor: tintColor)
         return view
     }()
 
     private lazy var buttonContainerView: ButtonContainerView = {
         let view = ButtonContainerView(tintColor: tintColor)
-        view.nextButtonDidTap = {
-            print("Next button tapped!!!")
+        view.nextButtonDidTap = { [weak self] in
+            guard let this = self else { return }
+            this.nextButtonDidTap?(this.transitionView.slideIndex)
+            this.transitionView.handleTap(direction: .right)
         }
-        view.getStartedButtonDidTap = {
-            print("Get started button tapped!!!")
-        }
+        view.getStartedButtonDidTap = getStartedButtonDidTap
         return view
     }()
     
@@ -47,6 +50,12 @@ class OnboardingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        setupGesture()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        transitionView.start()
     }
     
     private func setupViews() {
@@ -60,6 +69,24 @@ class OnboardingViewController: UIViewController {
         buttonContainerView.snp.makeConstraints { make in
             make.height.equalTo(120)
         }
+    }
+    
+    private func setupGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewDidTap(_:)))
+        transitionView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func viewDidTap(_ tap: UITapGestureRecognizer) {
+        let point = tap.location(in: view)
+        let midPoint = view.frame.size.width / 2
+        if point.x > midPoint {
+            transitionView.handleTap(direction: .right)
+        } else {
+            transitionView.handleTap(direction: .left)
+        }
+    }
         
+    func stopAnimation() {
+        transitionView.stop()
     }
 }
